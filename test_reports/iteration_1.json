@@ -1,0 +1,51 @@
+{
+  "summary": "Iteration 1. Backend: 30/30 pytest pass (waitlist validation/E.164/duplicate/consent_log/honeypot/rate-limit, auth + 401 guards, leads filter/patch/soft-delete/CSV export, testimonials CRUD/permission/reorder/soft-delete, site toggles + webhook hidden, object-storage upload+serve+thumb, seed Range 206). Extra probes found 2 backend bugs: a lead removed by the admin who joins again stays hidden, and stats counts include soft-deleted records. Frontend: on desktop (1366) everything tested works (nav anchors, hero CTAs, filters, lightbox next/zoom/close/Esc, values lightbox, accordions, form validation + 'WELCOME TO THE HOUSE.' success, consent/footer legal links, legal pages, admin login/tabs/leads search/gallery publish toggle/content save toast/sign-out/route guard). CRITICAL on mobile (390): the waitlist submit button is covered by the FAQ section and cannot be tapped, so mobile users cannot join. Curriculum Week 4 is also clipped. Both come from flex:1 children inside column layouts. Legal pages show every body paragraph in heading style. No deprecated Expo packages (expo-video, expo-image are used).",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/waitlist", "issue": "If the admin removed a lead (deleted:true) and that person joins again, the API returns status 'updated' but never clears deleted, so the lead stays hidden from /admin/leads and both CSV exports even though email_status is 'subscribed' again (and SMS opted_in if they checked it). Real opt-ins are silently lost. Reproduced with test_rejoin@example.com. Fix: add 'deleted': False to upd (or $unset deleted) in join_waitlist. server.py:454-465", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "GET /api/admin/stats", "issue": "total/last_7_days/email_subscribed/sms_opted_in count soft-deleted leads, so Overview shows 9 Waitlist contacts while the active list has 0. testimonials_draft counts soft-deleted testimonials, so it shows 3 drafts while Gallery lists 2. Add {'deleted': {'$ne': True}} to every count. server.py:507-517"},
+      {"endpoint": "rate_limit()", "issue": "IP comes from the first X-Forwarded-For entry, which the client controls, so the waitlist (6/10min) and login (10/10min) limits can be bypassed by rotating the header. Prefer the last trusted proxy hop. server.py:61"},
+      {"endpoint": "POST /api/admin/upload", "issue": "folder form value is put into the storage path without sanitizing (e.g. '../x'). Whitelist the folder names. server.py:188"},
+      {"endpoint": "GET /api/static/seed/{name}", "issue": "Suffix ranges ('bytes=-500') are read as 0-500 instead of the last 500 bytes, and there is no 416 for an invalid range. server.py:591-599"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Waitlist form card (mobile)", "issue": "Card height is 830px but the form inside is 1021px. The bottom of the SMS consent text, the submit button and the risk line spill past the section and sit under faq-section. elementFromPoint at the button centre returns faq-section and a normal Playwright click times out, so the form cannot be submitted on mobile. Root cause: <View style={{flex:1}}> card (and flex:0.8 sibling) inside a flexDirection:'column' parent (flex:1 1 0% on web). Fix: use flex only when wide (flex: wide ? 1 : undefined). Waitlist.tsx:94,101", "testID": "waitlist-submit-button", "priority": "CRITICAL"},
+      {"component": "Curriculum accordion (mobile)", "issue": "Same flex:1-in-column problem: accordion box is 418px vs 548px scrollHeight, so the Week 4 row is cut off on mobile and opening a week clips content. Program.tsx:104 (also check Program.tsx:25,73,74,99,155; Closing.tsx:18,82; Hero.tsx:74; Values.tsx:43; Founder.tsx:182)", "testID": "curriculum-accordion", "priority": "HIGH"},
+      {"component": "Legal pages body", "issue": "Content uses '## Heading\\nParagraph' (one newline) but the renderer splits on '\\n\\n' and checks startsWith('## '), so every paragraph after a heading is drawn in 26px serif heading style. Fix: split each block on the first '\\n' to get heading and body. app/legal/[slug].tsx:57-61, content_defaults.py", "testID": "legal-page-*", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [
+      {"flow": "Admin gallery publish toggle", "issue": "Works (public count 17->16->17) but shows no toast, unlike content save.", "affected_testIDs": ["gallery-publish-*", "admin-toast"]}
+    ],
+    "design_issues": [
+      {"screen": "Home (mobile)", "issues": ["The first anchor scroll from the top sometimes lands off target (menu->waitlist section top=268, menu->intensive top=173, expected 68). Likely layout shift from images loading during the smooth scroll. Consider re-measuring after the scroll.", "On desktop, after success the page stays scrolled near the bottom of the tall card, so the 'WELCOME TO THE HOUSE.' message is above the viewport. Scroll the card into view on success."]},
+      {"screen": "Admin Content (mobile)", "issues": ["Switch toggles look smaller than the 44px touch target."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_goldhouse_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "CRITICAL: Fix the mobile waitlist submit being covered. Remove flex:1/flex:0.8 from children of responsive row/column containers when !wide (Waitlist.tsx:94,101) and apply the same fix to the other files listed (Program.tsx curriculum hides Week 4).",
+    "HIGH: In POST /api/waitlist, clear deleted when an existing lead joins again (server.py ~454).",
+    "Fix legal page markdown parsing so '## Heading\\nbody' renders heading and body separately.",
+    "Exclude soft-deleted leads and testimonials from /api/admin/stats counts.",
+    "Optional: toast for gallery publish toggle; scroll to success message; more robust IP for rate limiting; sanitize upload folder."
+  ],
+  "critical_code_review_comments": [
+    "rate_limit trusts the client-supplied first X-Forwarded-For value.",
+    "upload folder is not validated before building the storage path.",
+    "stats queries ignore the soft-delete flags used everywhere else.",
+    "_hits rate-limit dict is in-memory, per process, and never pruned for idle IPs (unbounded growth).",
+    "PUT /admin/settings takes a raw dict with no type validation (e.g. show_price could be saved as a string)."
+  ],
+  "updated_files": ["/app/backend/tests/test_goldhouse_api.py (new)"],
+  "success_rate": {"backend": "100% of 30 pytest tests; 2 extra bugs found by probes", "frontend": "~85% (desktop flows pass; mobile waitlist submit blocked, curriculum clipped, legal formatting)"},
+  "seed_data_creation": "TEST_ leads created and then soft-deleted through the API. A test quote testimonial was created and soft-deleted. A test image was uploaded and soft-deleted. Settings were restored. Admin password unchanged.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run with: EXPO_BACKEND_URL=<EXPO_PUBLIC_BACKEND_URL from frontend/.env> pytest /app/backend/tests/test_goldhouse_api.py -p no:randomly (pytest.ini adds xdist -n). frontend/.env key is EXPO_PUBLIC_BACKEND_URL. Use varying X-Forwarded-For to avoid 429s. To check the mobile submit fix: scroll waitlist-submit-button into view and run elementFromPoint at its centre; it must be the button, not faq-section. Existing deleted lead 't@example.com' was DB-deleted by the main agent with sms opted_in, which inflates stats.",
+  "rca_of_issue": "Mobile layout clipping: react-native-web turns flex:1 into 'flex:1 1 0%'. Inside a column container with auto height, the children collapse to the basis or shrink and their content overflows. The next section is painted later and covers the overflow, which blocks taps. On desktop the parent is a row, so it renders correctly. Mitigation: only set flex when wide (row), or use flexGrow:1 with flexBasis:'auto'."
+}

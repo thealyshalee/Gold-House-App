@@ -1,0 +1,141 @@
+{
+  "app_name": "Gold House Trading",
+  "personality": "3 Editorial Mobile LIGHT",
+  "personality_one_liner": "Quiet luxury and editorial elegance; a warm, minimalist space that prioritizes generous negative space, high-contrast typography, and deliberate restraint.",
+  "color": {
+    "surface": "#FAF8F3",
+    "onSurface": "#30251C",
+    "surfaceSecondary": "#F2EDE4",
+    "onSurfaceSecondary": "#30251C",
+    "surfaceTertiary": "#FFFFFF",
+    "onSurfaceTertiary": "#30251C",
+    "surfaceInverse": "#24211E",
+    "onSurfaceInverse": "#FAF8F3",
+    "brand": "#C4A16A",
+    "brandPrimary": "#C4A16A",
+    "onBrandPrimary": "#FFFFFF",
+    "brandSecondary": "#30251C",
+    "onBrandSecondary": "#FAF8F3",
+    "brandTertiary": "#D8CCBB",
+    "onBrandTertiary": "#30251C",
+    "success": "#4A5D23",
+    "onSuccess": "#FFFFFF",
+    "warning": "#C4A16A",
+    "onWarning": "#FFFFFF",
+    "error": "#8B3A3A",
+    "onError": "#FFFFFF",
+    "info": "#4A6274",
+    "onInfo": "#FFFFFF",
+    "border": "#D8CCBB",
+    "borderStrong": "#C4A16A",
+    "divider": "#D8CCBB",
+    "muted": "#756D65",
+    "onBrand": "#FFFFFF"
+  },
+  "typography": {
+    "displayFontFamily": "Cormorant Garamond",
+    "textFontFamily": "Inter",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24,
+      "3xl": 48
+    }
+  },
+  "spacing": {
+    "rule": "Generous editorial spacing. Use ample vertical padding between sections to let content breathe. Hairline dividers between list items.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 0,
+    "md": 4,
+    "lg": 8,
+    "pill": 999
+  },
+  "shadow_tier": 0,
+  "navigation": "stack_only",
+  "icon_set": "Feather",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Use subtle glass effect on the sticky top navigation bar (Header) as content scrolls underneath.",
+      "Use glass scrim over full-bleed hero imagery to ensure text contrast."
+    ],
+    "dont's": [
+      "Do not use glass on standard content cards.",
+      "Do not use glass on the Waitlist form."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Landing",
+      "purpose": "One-page scrolling website showcasing the brand, values, curriculum, and waitlist.",
+      "states": {
+        "loading": "Subtle fade-in spinner in brand gold.",
+        "empty": "N/A - static content.",
+        "error": "Standard clean error message with reload button."
+      },
+      "layout": "Full-bleed hero with sticky nav. Sections flow vertically with generous spacing: Hero -> Philosophy -> Student Results (horizontal scrolling cards) -> Meet Alysha (split layout or text over image) -> Story Timeline -> Core Values (horizontal carousel 4:5 images) -> Why Different -> 4-Week Intensive (accordion) -> Waitlist Form -> FAQ -> Footer."
+    },
+    {
+      "name": "Admin Dashboard",
+      "purpose": "Secure area to manage leads, testimonials, and content.",
+      "states": {
+        "loading": "Centered spinner.",
+        "empty": "Clean illustration with 'No leads yet' and clear typography.",
+        "error": "Toast notification with retry action."
+      },
+      "layout": "Tabbed or split-pane view depending on breakpoint. Data tables/lists with filter chips. Crisp white cards on soft cream background."
+    }
+  ],
+  "images": {
+    "hero_bg": {
+      "url": "https://images.unsplash.com/photo-1725610036468-ee58fab023ef?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHw0fHxtaW5pbWFsaXN0JTIwd2FybSUyMGFyY2hpdGVjdHVyZSUyMGx1eHVyeXxlbnwwfHx8fDE3OTMzOTkzNzZ8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Minimalist architecture in warm light"
+    },
+    "alysha_portrait": {
+      "url": "https://images.unsplash.com/photo-1585240975858-7264fd020798?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwzfHxlbGVnYW50JTIwZmVtYWxlJTIwZW50cmVwcmVuZXVyJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzkzMzk5Mzc2fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Elegant female entrepreneur portrait"
+    },
+    "workspace_vision": {
+      "url": "https://images.unsplash.com/photo-1765894359240-49b82f93b91a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzB8MHwxfHNlYXJjaHwzfHxhZXN0aGV0aWMlMjBsYXB0b3AlMjB3b3Jrc3BhY2UlMjB3YXJtJTIwbGlnaHRpbmd8ZW58MHx8fHwxNzkzMzk5Mzc2fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Aesthetic laptop workspace in warm light"
+    },
+    "gold_texture": {
+      "url": "https://images.unsplash.com/photo-1545873509-33e944ca7655?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwxfHxnb2xkJTIwbWluaW1hbCUyMHRleHR1cmV8ZW58MHx8fHwxNzkzMzk5Mzg3fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Minimal gold foil texture for core values"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Strictly adhere to the 3 Editorial Mobile LIGHT personality. Use Cormorant Garamond for all primary headings, letting size create hierarchy rather than heavy weights.",
+    "Implement the sticky navigation header with a glassmorphism effect (blur) so content smoothly scrolls underneath.",
+    "Borders should be hairline (0.5pt or 1pt max) using the `border` (#D8CCBB) token. Avoid thick cards; prefer layout separation via whitespace and thin dividers.",
+    "Waitlist Form: Input fields should have a solid #FFFFFF background, #D8CCBB borders, and #30251C text. Labels above inputs. No floating labels.",
+    "Core Values Carousel: Horizontal ScrollView containing 4:5 aspect ratio cards. The cards should use white backgrounds with gold serif text, potentially layered with the gold texture.",
+    "Student Results: Use a chip row for filtering (All/Trading/Testimonials/Progress). Ensure the lightbox can be dismissed via swipe-down gesture.",
+    "Ensure the hero image has a vertical gradient scrim (transparent to #24211E at the bottom) so the 'WELCOME HOME' text remains highly legible.",
+    "Use Feather icons throughout. Icons must be sharp, single-weight, and sized appropriately.",
+    "Do not use gradients indiscriminately; rely on solid, flat blocks of the editorial palette (Ivory, Cream, Espresso, Charcoal). Gold is purely an accent.",
+    "Ensure 'Vision of Freedom' and 'Meet Alysha' sections balance text content with full-bleed or beautifully boxed imagery."
+  ]
+}

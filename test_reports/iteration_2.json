@@ -1,0 +1,40 @@
+{
+  "summary": "Iteration 2 retest. Backend: 34/34 pytest pass (updated test_goldhouse_api.py: phone required + exact message, E.164 variants incl. +44 and 1-602, rejoin-after-soft-delete restores lead in list/export/stats, stats exclude deleted, suffix Range bytes=-100 returns last 100 bytes, upload folder whitelist '../../evil' -> 'general'). Suite run against internal http://localhost:8001 because a public-URL run is limited to 6 waitlist posts per 10 min per bucket (see HIGH issue). Spot checks against the public URL (phone 422, Range suffix 206, rate limit) behaved the same. Frontend (390x844 + 1920x1080): mobile waitlist submit is tappable (hit-test OK, 292x52). Phone required shows the error 'Please enter your mobile number.' and an invalid phone '12345' shows the 'valid mobile number' error. Full mobile and desktop submissions show 'WELCOME TO THE HOUSE.' and scroll the success card into view. The DB matches: +16025550188 sms none and +16025550166 sms opted_in. Curriculum Week 4 is visible and tappable on mobile. No sections overlap on mobile (sorted by position). Hero has no large logo and shows the centered 'WELCOME HOME.' text in first person. Continued Education section and both cards render on mobile (stacked) and desktop (2 columns). The FAQ includes 'What happens after the four weeks?' and the answer expands. Mobile menu and desktop nav anchors land at the 68px nav offset. Hero 'See results' works. Results lightbox opens (prev/next/zoom/close) and Esc closes it. On mobile the values dots scroll the carousel and a card opens the lightbox; the arrows only appear on desktop, by design. All 4 legal pages render headings separately with no raw '##'. Admin: a bad login shows an error, a good login opens the dashboard, all 5 tabs load, leads search works, the gallery publish toggle shows the 'Gallery updated.' toast (toggled back afterwards), sign-out works and the route guard works. NEW HIGH bug: the rate-limit key uses the last X-Forwarded-For hop. In this environment that is the shared load-balancer IP, so all visitors share one bucket.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "rate_limit() used by POST /api/waitlist and POST /api/auth/login (server.py:60-63)", "issue": "The real XFF the backend sees through the ingress is ['<client-supplied>', '34.170.12.145' (real client), '172.71.255.102' (Cloudflare edge), '34.160.137.46' (GCP LB)]. xff[-1] is the load-balancer IP, which is the same for every visitor. So the waitlist limit (6 per 10 min) and the login limit (10 per 10 min) are effectively GLOBAL: after 6 signups from anyone, every visitor gets 429 for 10 minutes. It also means attackers can lock the admin out of login. Reproduced: 7 honeypot posts with different spoofed XFF values -> 6x200 then 429.", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "POST /api/waitlist", "issue": "If the 'phone' key is missing, Pydantic returns its raw 422 error array instead of 'Please enter your mobile number.' (phone: str with no default). The frontend always sends phone, so the impact is low. Suggest phone: str = Field(default='', max_length=30) so the friendly message is used."},
+      {"endpoint": "GET /api/static/seed/{name}", "issue": "A malformed Range header (bytes=abc-) returns 500 (ValueError in int()). A start offset past the file size gives a 206 with an invalid Content-Range instead of 416."},
+      {"endpoint": "POST /api/waitlist", "issue": "rate_limit runs before validation and the honeypot check, so a user's own 422 validation retries use up their limit."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home (mobile)", "issues": ["After a waitlist submit the success card is scrolled to y=649 of 844, so the heading is visible but the body text is below the fold. Consider scrolling the card to near the top.", "Footer admin link touch target is 73x22 (under 44px)."]},
+      {"screen": "Admin overview", "issues": ["The overview tab panel has no container testID (admin-overview) like the other tabs do. The stats cards use stat-*."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_goldhouse_api.py", "/app/test_reports/pytest/pytest_results_iter2.xml"],
+  "action_items": [
+    "HIGH: Fix the rate-limit client IP. Don't use xff[-1]. Prefer CF-Connecting-IP / True-Client-IP if present. Otherwise walk XFF from the right and skip a configured number of trusted proxy hops (here: Cloudflare + GCP LB = 2, so client = xff[-3]), or skip private/Cloudflare/GCP-LB ranges. Then verify that two different clients get separate buckets.",
+    "Minor: give WaitlistIn.phone a default of '' so a missing phone returns the friendly 'Please enter your mobile number.' message.",
+    "Minor: seed Range parsing: return 416 for malformed or unsatisfiable ranges instead of 500 or a bad 206.",
+    "Optional: scroll the waitlist success card to near the top on mobile. Raise the footer admin link touch target to 44px."
+  ],
+  "critical_code_review_comments": [
+    "server.py:62-63 comment says 'last hop is appended by our ingress' but the ingress chain appends 3 hops (client, CF edge, LB); last hop = shared LB IP.",
+    "In-memory _hits dict: the rate limit resets on every backend restart or reload and isn't shared across workers. That is acceptable for a single worker but worth noting."
+  ],
+  "updated_files": ["/app/backend/tests/test_goldhouse_api.py"],
+  "success_rate": {"backend": "100% (34/34) functional; 1 HIGH rate-limit keying bug found via header inspection", "frontend": "100% of requested flows passed"},
+  "seed_data_creation": "Test leads test_m58565@example.com and test_d70260@example.com were created via the UI and soft-deleted. Pytest TEST_ leads are soft-deleted in teardown. Gallery publish toggle was restored (first item published again).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run pytest with EXPO_BACKEND_URL=http://localhost:8001 to avoid the global rate-limit bucket through the public ingress (or restart the backend to clear the in-memory _hits). Through the public URL a spoofed XFF is not the last hop. After the rate-limit fix, add a test that two different values in the client position (xff[-3]) get separate buckets. Admin creds are in /app/memory/test_credentials.md.",
+  "rca_of_issue": "Rate limit: a temporary debug log (since reverted) showed the XFF the backend receives: [spoofed, client 34.170.12.145, Cloudflare 172.71.255.102, GCP LB 34.160.137.46]. rate_limit takes xff[-1], which is the constant LB IP, so every visitor shares one bucket. Mitigation: trusted-hop counting or CF-Connecting-IP."
+}

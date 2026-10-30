@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Gold House Trading",
+    "slug": "frontend",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "goldhouse",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.emergent.goldhousetrading.dvfltc",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Upload student results and photos to your site"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FAF8F3"
+      },
+      "package": "com.emergent.goldhousetrading.dvfltc"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png",
+      "name": "Gold House Trading",
+      "shortName": "Gold House",
+      "description": "Learn gold trading with Alysha Lee at Gold House Trading. Explore real student experiences, a beginner-friendly four-week intensive, and upcoming cohorts.",
+      "themeColor": "#FAF8F3",
+      "backgroundColor": "#FAF8F3"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-image.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#FAF8F3"
+        }
+      ],
+      "expo-font",
+      "expo-image",
+      "expo-secure-store",
+      "expo-web-browser",
+      "expo-status-bar",
+      "expo-video",
+      "@react-native-vector-icons/feather",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Upload student results and photos to your site"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
