@@ -37,3 +37,4 @@ Premium, mobile-first official website for Gold House Trading (Esothrive LLC DBA
 - P1: Upload the story video; owner/legal review of the legal pages; business mailing address.
 - P1: Connect an SMS provider (Twilio/Textedly) and an email platform through the webhook once registrations are approved.
 - P2: Social share image (og:image), custom domain, student portal (future).
+- Oct 30 2026: Fixed founder/story section overlap on mobile; swim fact updated (Bob Bowman & Michael Phelps).

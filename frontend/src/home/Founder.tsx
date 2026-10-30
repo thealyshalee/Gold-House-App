@@ -26,8 +26,7 @@ My goal isn't to make students dependent on me. It's to give them the education 
 Welcome Home.`;
 
 const FACTS = [
-  "Former Division I swimmer at Arizona State University",
-  "Qualified for the U.S. Olympic Trials",
+  "Former Division I swimmer at Arizona State, coached by Bob Bowman and Michael Phelps",
   "Spoken to audiences of 10,000+, here and abroad",
   "Actress — featured in 4 movies on Amazon Prime",
   "Entrepreneur and educator",
@@ -59,7 +58,7 @@ export function MeetAlysha({ site }: { site?: Site }) {
       <Container>
         <View style={{ flexDirection: wide ? "row" : "column", gap: wide ? 80 : 40 }}>
           <Reveal style={{ flex: wide ? 0.85 : undefined }}>
-            <View style={{ position: wide ? ("sticky" as any) : "relative", top: 100 }}>
+            <View style={{ position: "relative" }}>
               {photo ? (
                 <Image testID="founder-photo" source={{ uri: photo }} style={{ width: "100%", aspectRatio: 958 / 1287 }} contentFit="cover" transition={400} accessibilityLabel="Alysha Lee, founder of Gold House Trading" />
               ) : (
@@ -68,7 +67,7 @@ export function MeetAlysha({ site }: { site?: Site }) {
               <View style={{ marginTop: S.lg, gap: 8 }}>
                 {FACTS.map((f) => (
                   <View key={f} style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
-                    <GoldRule width={16} />
+                    <GoldRule width={16} style={{ alignSelf: "center" }} />
                     <Text style={{ fontFamily: F.sans, fontSize: 13, color: colors.muted, flex: 1 }}>{f}</Text>
                   </View>
                 ))}
@@ -151,7 +150,7 @@ export function Story({ site }: { site?: Site }) {
         <View style={{ flexDirection: wide ? "row" : "column", gap: wide ? 80 : 40, alignItems: "flex-start" }}>
           {hasVideo || preview ? (
             <Reveal style={{ width: wide ? 400 : "100%" }}>
-              <View style={{ position: wide ? ("sticky" as any) : "relative", top: 100, width: "100%", maxWidth: 420, alignSelf: "center" }}>
+              <View style={{ position: "relative", width: "100%", maxWidth: 420, alignSelf: "center" }}>
                 {hasVideo ? (
                   <View style={{ borderWidth: 1, borderColor: colors.border, padding: 8, backgroundColor: colors.surfaceTertiary }}>
                     <Video uri={video} poster={resolveUrl(site?.story_video_poster)} aspect={9 / 16} testID="story-video" />

@@ -1,0 +1,22 @@
+{
+  "summary": "Frontend-only verification of founder-section overlap fix and facts copy change. Automated bounding-box overlap detection (all leaf text/img nodes inside founder-section and story-section, after scrolling to trigger Reveal animations) found ZERO overlaps at 390x844, 768x1024, 1366x900 and 1920x1080. Screenshots confirm on mobile/tablet the facts list now sits fully above the 'MEET YOUR COACH' eyebrow / 'MEET ALYSHA LEE.' headline with clear spacing; desktop shows 2-column layout with no overlap. Story section clean on mobile and desktop. Facts list shows 'Former Division I swimmer at Arizona State, coached by Bob Bowman and Michael Phelps'; 'Olympic' appears nowhere in page text or frontend source. Nav regression: nav-link-founder (desktop) and mobile-link-founder (mobile menu) both scroll founder-section to top=69px (just below the fixed header). No deprecated Expo packages in referenced files.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home / founder-section facts list", "issues": ["Cosmetic: GoldRule sets alignSelf:'flex-start' (src/ui.tsx:82), which overrides the row's alignItems:'center' in Founder.tsx:69, so the 16px gold dash is pinned to the top edge of each fact row (~8px above the text's vertical center, more noticeable on the 2-line first fact on mobile). Pass style={{ alignSelf: 'center' }} to GoldRule in the FACTS map if centered dashes are desired."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [".screenshots/founder_390.jpg", ".screenshots/founder_768.jpg", ".screenshots/founder_1366.jpg", ".screenshots/founder_1920.jpg", ".screenshots/story_390.jpg"],
+  "action_items": ["Optional cosmetic: vertically center the gold dash beside each fact in the founder facts list (Founder.tsx:70 -> <GoldRule width={16} style={{ alignSelf: 'center' }} />)."],
+  "critical_code_review_comments": ["Founder.tsx: sticky/top offset removed from both MeetAlysha and Story columns; layout now uses plain flex column on narrow and row on wide - correct fix for the root cause."],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100%"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Founder overlap bug verified fixed via JS bounding-box overlap check across 4 viewports. Sticky mobile 'JOIN THE WAITLIST' bottom bar overlays content by design.",
+  "rca_of_issue": "Original bug: desktop sticky top offset (100px) was applied on mobile column layout, shifting photo+facts down into the eyebrow/headline. Fix removed the offset; verified no overlap."
+}
