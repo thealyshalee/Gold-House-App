@@ -59,7 +59,7 @@ export type Site = {
   contact_email: string; support_phone: string; business_address: string;
   instagram_brand: string; tiktok_brand: string; instagram_personal: string; tiktok_personal: string;
   cohort_dates: string; show_cohort_dates: boolean; announcement: string; show_announcement: boolean;
-  price: string; show_price: boolean; hero_photo: string; founder_photo: string; lifestyle_photo: string;
+  price: string; show_price: boolean; price_note: string; payment_plan: string; show_payment_plan: boolean; hero_photo: string; founder_photo: string; lifestyle_photo: string;
   story_video: string; story_video_poster: string; featured_quote: string; featured_name: string; featured_published: boolean;
   curriculum: Curriculum[]; faq: Faq[]; legal: Record<string, LegalDoc>; webhook_url?: string;
   consent: { email: string; sms: string; version: string };

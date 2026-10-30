@@ -1,0 +1,43 @@
+{
+  "summary": "Iteration 4: tested the founder overlap bug, pricing and payment plan, admin pricing settings, the referral program, the waitlist 'Who referred you?' field with admin search and CSV export, the FAQ, and a waitlist regression at 390px. Backend: 40/40 pytest pass (34 existing + 6 new). Frontend: every requested flow passed. Founder section: no overlapping text at 320, 360, 375, 390, 430, 768, 1024 and 1366px. The check covered every text element in all 17 *-section blocks, including story-section. The founder headline uses a 43px line height at 38px font size (64px at 56px). Gaps are 16px from eyebrow to headline and 12px from headline to lede, and the headline wraps cleanly at 360 and 1024. Clicking the 'Meet Your Coach' nav link leaves the headline clear of the sticky header. One new issue: at 320px the nav overflows, so the hamburger menu sits off-screen (x=309-353) and the logo text touches the WAITLIST button.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "PUT /api/admin/settings", "issue": "Accepts a raw dict with no type validation. For example, show_price:'no' is a truthy string, and price can be set to a non-string. Add a Pydantic model or type coercion."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Nav header at 320px", "issue": "At 320px the nav is 353px wide (document scrollWidth 353). nav-brand ends at x=200, nav-waitlist-button runs x=200-301 with no gap, and nav-menu-button is at x=309-353, partly off-screen. On very small phones the hamburger is clipped and the logo touches the button. Fine at 360px and above.", "testID": "nav-menu-button", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home / mobile", "issues": [
+        "The floating 'JOIN THE WAITLIST' bottom bar (about 52px) covers body text while scrolling, for example the founder bio paragraph at 390px. This is intentional, but it may be what the user means by 'overlapping text' on a phone. Consider a translucent or backdrop style and enough bottom padding at the end of the page.",
+        "referral-waitlist-button is labelled 'Share the waitlist' but only scrolls to the waitlist form. Users may expect a share sheet or copy-link action. Use expo-sharing or the Web Share API, or rename it to 'Join the waitlist'.",
+        "Admin leads search placeholder still says 'Search name, email or phone' even though search now also matches referred_by."
+      ]},
+      {"screen": "Admin Content", "issues": ["Price field label still says 'Course price / payment options'. Payment options now have their own field, so 'Course price' is clearer."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_pricing_referral.py", "/app/backend/tests/test_goldhouse_api.py", "/app/test_reports/pytest/pytest_iter4.xml"],
+  "action_items": [
+    "Fix nav overflow at 320px: shrink the brand logo or text, or hide the WAITLIST pill below about 340px, so nav-menu-button stays fully on screen.",
+    "(Minor) Validate types in PUT /api/admin/settings, at least the booleans show_price and show_payment_plan.",
+    "(Minor) Rename 'Share the waitlist' or make it a real share action. Update the leads search placeholder to mention referrer. Rename the admin price label.",
+    "(Optional) Check the floating mobile CTA bar is not what the user sees as overlapping text in the founder section. No text-on-text overlap exists in web preview at any tested width."
+  ],
+  "critical_code_review_comments": [
+    "Program.tsx Pricing: plan.map uses key={l}, so two identical lines entered in admin would collide. Use the index or a composite key.",
+    "server.py join_waitlist: re-joining with an empty referred_by keeps the earlier referrer. That is reasonable, but worth knowing for commission tracking.",
+    "No deprecated Expo packages found (expo-av, expo-barcode-scanner, expo-background-fetch not used)."
+  ],
+  "updated_files": ["/app/backend/tests/test_pricing_referral.py"],
+  "success_rate": {"backend": "100%", "frontend": "100% of requested flows (1 new medium nav issue at 320px)"},
+  "seed_data_creation": "Test leads (TEST_ prefix) were created and soft-deleted. Pricing settings were changed during testing and restored to defaults; show_price and show_payment_plan are both true, verified equal to content_defaults.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run pytest with EXPO_BACKEND_URL=http://localhost:8001; the env var name in frontend/.env is EXPO_PUBLIC_BACKEND_URL. Do not send a spoofed CF-Connecting-IP header to the public URL: Cloudflare returns 403. RN-web Switch toggles (content-show-price, content-show-payment-plan) can be clicked directly by testID. Admin tabs: admin-tab-leads, admin-tab-content; save button: content-save.",
+  "rca_of_issue": "Founder overlap: not reproducible after the fix. The headline line height went from too tight to 1.14x and the desktop sticky offset was removed earlier. Measured bounding boxes show no intersections at 8 widths."
+}

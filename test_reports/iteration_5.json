@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend-only retest of iteration 5 changes via public Expo web preview. Tested at 320, 390, 768 and 1366px. PASS: sticky-waitlist-cta no longer exists (0 matches), and no fixed or sticky elements other than site-nav exist at any width. Text-overlap scan of hero, what-is-trading, founder, story, success-path and waitlist found no overlaps and no horizontal overflow at any width. The only flagged hit, consent inline links at 320px, was a false positive from wrapped inline spans; the screenshot looks correct. Header at 320px: nav-brand is the logo mark only (x 20-60), nav-waitlist-button is at 147-248 and nav-menu-button at 256-300, all on screen with no overlap. What is trading shows 4 cards (trading-basic-0..3) and the not-gambling note, in 1 column on mobile and 2x2 on desktop. Success Path shows success-step-1..4, stacked on mobile (same x, rising y) and in one row on desktop (same y), plus the $500 → $5,000 example and the risk note. Nav anchors land at the section top (about 68px, right under the nav) for results, founder, intensive and waitlist on both desktop (nav-link-*) and mobile (mobile-link-*, mobile-menu-waitlist, nav-waitlist-button). Waitlist at 390px: an empty submit shows the phone-required error, and a full submit shows waitlist-success. The lead was saved with phone +15551234567 and then soft-deleted. The referral label reads 'Go to the waitlist', and the leads search placeholder now mentions the referrer. One minor issue found: the header is tight from 370 to about 375px.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Nav Brand (370-375px)", "issue": "The 370px cutoff for brand text is too low. Brand plus Waitlist pill plus menu button need about 373px. At 370-372px the brand shrinks (flexShrink) and the 'GOLD HOUSE' text touches the WAITLIST pill with a 0px gap. At 375px (iPhone SE/mini) the gap is only 2px. Reference: /app/frontend/src/home/Nav.tsx:24", "testID": "nav-brand", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Waitlist success (390px)", "issues": ["After a successful submit, onSuccess scrolls to the waitlist section top. The waitlist-success card starts at y=686 of 844, so the 'WELCOME TO...' heading is mostly below the fold. Consider scrolling to the success card instead."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_5.json"],
+  "action_items": [
+    "(Low) In Nav.tsx Brand, raise the logo-only cutoff from width < 370 to about width < 390, or reduce letterSpacing or the gap, so 'GOLD HOUSE' doesn't touch the WAITLIST pill at 370-375px.",
+    "(Optional) After a waitlist submit, scroll to the waitlist-success card rather than the section top, so the confirmation is visible on phones."
+  ],
+  "critical_code_review_comments": [
+    "index.tsx yOf() sums the measured heights of sections in ORDER. ORDER matches the render order, including the new 'whatis' and 'success' keys, so anchors are correct. Any future section must be added to both ORDER and the JSX in the same position.",
+    "PUT /admin/settings now coerces booleans with `v is True`, so the string 'true' becomes False. This is acceptable because the admin UI sends real booleans."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped as requested)", "frontend": "100% of requested checks passed (1 low-priority cosmetic issue at 370-375px)"},
+  "seed_data_creation": "Created 1 lead (test_it5_*@example.com, TEST_Iter5), then soft-deleted it via DELETE /api/admin/leads/{id}.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Responsive cutoff: useLayout wide >= 900px, so 768px uses the mobile layout. On web, RN inline nested Text (consent links) gives false positives in bounding-box overlap scans. Use localhost:8001 for admin API calls (GET /api/admin/leads?search=..., DELETE /api/admin/leads/{id}). Section testIDs: hero-section, philosophy-section, what-is-trading-section, results-section, founder-section, story-section, values-section, different-section, small-cohort-section, intensive-section, continued-education-section, success-path-section, referral-section, commitment-section, whofor-section, vision-section, waitlist-section."
+}

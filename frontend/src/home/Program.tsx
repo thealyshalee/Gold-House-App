@@ -113,12 +113,12 @@ export function Intensive({ site }: { site?: Site }) {
             This is a four-week live intensive, and I teach every class myself. We focus on gold (XAUUSD) — market structure, technical analysis, disciplined execution, and the mindset side of trading that nobody talks about enough. My goal is simple: by the end, you have a repeatable framework you can keep practicing on your own.
           </Body>
         </View>
-        {site?.cohort_dates || site?.price ? (
-          <View testID="cohort-info" style={{ flexDirection: wide ? "row" : "column", gap: 16, marginTop: S.xxl, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border, paddingVertical: S.lg }}>
-            {site?.cohort_dates ? <Text style={{ fontFamily: F.sansMed, fontSize: 14, color: colors.onSurface }}><Text style={{ color: colors.goldDeep }}>NEXT COHORT  </Text>{site.cohort_dates}</Text> : null}
-            {site?.price ? <Text style={{ fontFamily: F.sansMed, fontSize: 14, color: colors.onSurface }}><Text style={{ color: colors.goldDeep }}>ENROLLMENT  </Text>{site.price}</Text> : null}
+        {site?.cohort_dates ? (
+          <View testID="cohort-info" style={{ marginTop: S.xxl, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border, paddingVertical: S.lg }}>
+            <Text style={{ fontFamily: F.sansMed, fontSize: 14, color: colors.onSurface }}><Text style={{ color: colors.goldDeep }}>NEXT COHORT  </Text>{site.cohort_dates}</Text>
           </View>
         ) : null}
+        {site?.price ? <Pricing site={site} /> : null}
 
         <Text style={{ fontFamily: F.sansSemi, fontSize: 11, letterSpacing: 3, color: colors.goldDeep, marginTop: wide ? 80 : 56, marginBottom: S.xl }}>WHAT&apos;S INCLUDED</Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap", marginHorizontal: -8 }}>
@@ -159,6 +159,36 @@ export function Intensive({ site }: { site?: Site }) {
   );
 }
 
+export function Referral({ onNav }: { onNav: (k: Anchor) => void }) {
+  const { colors } = useTheme();
+  const { wide } = useLayout();
+  return (
+    <Section bg={colors.surfaceSecondary} testID="referral-section" style={{ paddingVertical: wide ? 96 : 64 }}>
+      <Container>
+        <View style={{ flexDirection: wide ? "row" : "column", gap: wide ? 80 : 28, alignItems: wide ? "center" : "stretch" }}>
+          <View style={{ flex: wide ? 1 : undefined }}>
+            <Eyebrow>Referral Program</Eyebrow>
+            <Display>SHARE THE HOUSE.</Display>
+            <Lede style={{ marginTop: S.lg }}>Know someone who would love this? Bring them home.</Lede>
+            <Body style={{ marginTop: S.lg }} color={colors.muted}>
+              Some of my favorite students came from someone who believed in them. So for every student you refer, I&apos;ll send you a $100 commission once your referral pays. Just ask them to put your name in the &ldquo;Who referred you?&rdquo; box when they join the waitlist.
+            </Body>
+            <View style={{ marginTop: S.xl }}>
+              <Btn variant="outline" label="Go to the waitlist" icon="arrow-right" testID="referral-waitlist-button" onPress={() => onNav("waitlist")} />
+            </View>
+          </View>
+          <View testID="referral-amount-card" style={{ flex: wide ? 0.7 : undefined, backgroundColor: colors.surfaceTertiary, borderWidth: 1, borderColor: colors.brand, padding: wide ? 48 : 28, alignItems: "center" }}>
+            <Text style={{ fontFamily: F.serif, fontSize: wide ? 96 : 72, color: colors.onSurface }}>$100</Text>
+            <Text style={{ fontFamily: F.sansSemi, fontSize: 11, letterSpacing: 3, color: colors.goldDeep, textAlign: "center" }}>FOR EVERY STUDENT YOU REFER</Text>
+            <GoldRule center style={{ marginVertical: S.lg }} />
+            <Text style={{ fontFamily: F.sans, fontSize: 13, lineHeight: 20, color: colors.muted, textAlign: "center" }}>Paid to you once your referral pays.</Text>
+          </View>
+        </View>
+      </Container>
+    </Section>
+  );
+}
+
 export function Commitment() {
   const { colors } = useTheme();
   const { wide } = useLayout();
@@ -178,6 +208,42 @@ export function Commitment() {
         </View>
       </Container>
     </Section>
+  );
+}
+
+function Pricing({ site }: { site: Site }) {
+  const { colors } = useTheme();
+  const { wide } = useLayout();
+  const plan = (site.payment_plan || "").split("\n").filter((l) => l.trim());
+  return (
+    <View testID="pricing-block" style={{ flexDirection: wide ? "row" : "column", marginTop: wide ? 64 : 48 }}>
+      <View style={{ flex: wide ? 1 : undefined, backgroundColor: colors.surfaceInverse, padding: wide ? 48 : 28 }}>
+        <Text style={{ fontFamily: F.sansSemi, fontSize: 11, letterSpacing: 3, color: colors.brand }}>YOUR INVESTMENT</Text>
+        <Text testID="pricing-amount" style={{ fontFamily: F.serif, fontSize: wide ? 80 : 60, color: colors.onSurfaceInverse, marginTop: S.md }}>{site.price}</Text>
+        <Text style={{ fontFamily: F.sans, fontSize: 14, color: colors.mutedInverse }}>For the full four-week intensive with me</Text>
+        {site.price_note ? (
+          <View testID="pricing-note" style={{ marginTop: S.xl, borderLeftWidth: 1, borderColor: colors.brand, paddingLeft: 14 }}>
+            <Text style={{ fontFamily: F.serifItal, fontSize: 19, lineHeight: 26, color: colors.onSurfaceInverse }}>{site.price_note}</Text>
+          </View>
+        ) : null}
+      </View>
+      {plan.length ? (
+        <View testID="payment-plan" style={{ flex: wide ? 1 : undefined, backgroundColor: colors.surfaceTertiary, borderWidth: 1, borderColor: colors.border, padding: wide ? 48 : 28 }}>
+          <Text style={{ fontFamily: F.sansSemi, fontSize: 11, letterSpacing: 3, color: colors.goldDeep }}>PAYMENT PLAN OPTION</Text>
+          <Text style={{ fontFamily: F.serif, fontSize: wide ? 30 : 26, color: colors.onSurface, marginTop: S.md, marginBottom: S.md }}>Need to spread it out? Just ask.</Text>
+          <Body size={15} color={colors.muted}>If a payment plan would help, you can request one. It&apos;s a contract directly between you and me, and it&apos;s offered when approved. Here&apos;s what you can expect:</Body>
+          <View style={{ gap: 12, marginTop: S.lg }}>
+            {plan.map((l, idx) => (
+              <View key={`${idx}-${l}`} style={{ flexDirection: "row", gap: 12 }}>
+                <Feather name="check" size={15} color={colors.brand} style={{ marginTop: 4 }} />
+                <Body size={15} style={{ flex: 1 }}>{l}</Body>
+              </View>
+            ))}
+          </View>
+          <Text style={{ fontFamily: F.sans, fontSize: 12, lineHeight: 18, color: colors.muted, marginTop: S.lg }}>By choosing a payment plan, you agree to all of the contract terms.</Text>
+        </View>
+      ) : null}
+    </View>
   );
 }
 

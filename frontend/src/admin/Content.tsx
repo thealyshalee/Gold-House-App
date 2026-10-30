@@ -76,8 +76,11 @@ export default function Content({ notify }: { notify: (m: string, e?: boolean) =
         <Toggle label="Show cohort dates on the website" value={s.show_cohort_dates} onChange={(v) => set("show_cohort_dates", v)} testID="content-show-cohort" />
         <Field label="Enrollment announcement" value={s.announcement} onChange={(v) => set("announcement", v)} testID="content-announcement" placeholder="e.g. Enrollment for the next cohort is now open." />
         <Toggle label="Show announcement at the top of the homepage" value={s.show_announcement} onChange={(v) => set("show_announcement", v)} testID="content-show-announcement" />
-        <Field label="Course price / payment options" value={s.price} onChange={(v) => set("price", v)} testID="content-price" />
-        <Toggle label="Show price on the website" value={s.show_price} onChange={(v) => set("show_price", v)} testID="content-show-price" hint="Hidden unless you turn this on." />
+        <Field label="Course price" value={s.price} onChange={(v) => set("price", v)} testID="content-price" />
+        <Toggle label="Show price on the website" value={s.show_price} onChange={(v) => set("show_price", v)} testID="content-show-price" />
+        <Field label="Price note" value={s.price_note || ""} onChange={(v) => set("price_note", v)} testID="content-price-note" multiline />
+        <Field label="Payment plan details (one per line)" value={s.payment_plan || ""} onChange={(v) => set("payment_plan", v)} testID="content-payment-plan" multiline />
+        <Toggle label="Show payment plan option" value={!!s.show_payment_plan} onChange={(v) => set("show_payment_plan", v)} testID="content-show-payment-plan" />
       </Card>
       <Card title="Featured testimonial">
         <Field label="Authentic student quote" value={s.featured_quote} onChange={(v) => set("featured_quote", v)} testID="content-featured-quote" multiline />

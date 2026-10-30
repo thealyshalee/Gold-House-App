@@ -17,13 +17,29 @@ const LINKS: { key: Anchor; label: string }[] = [
 
 export function Brand({ onPress, light }: { onPress?: () => void; light?: boolean }) {
   const { colors } = useTheme();
+  const { width } = useLayout();
   return (
-    <Pressable testID="nav-brand" onPress={onPress} accessibilityRole="link" accessibilityLabel="Gold House Trading home" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+    <Pressable testID="nav-brand" onPress={onPress} accessibilityRole="link" accessibilityLabel="Gold House Trading home" style={{ flexDirection: "row", alignItems: "center", gap: 10, flexShrink: 1 }}>
       <Image source={require("../../assets/images/logo-mark.png")} style={{ width: 40, height: 37 }} contentFit="contain" accessibilityLabel="Gold House Trading logo" />
+      {width < 370 ? null : (
       <View>
         <Text style={{ fontFamily: F.serifSemi, fontSize: 18, letterSpacing: 1.6, color: light ? colors.onSurfaceInverse : colors.onSurface }}>GOLD HOUSE</Text>
         <Text style={{ fontFamily: F.sansMed, fontSize: 8, letterSpacing: 4.5, color: colors.goldDeep, marginTop: -1 }}>TRADING</Text>
       </View>
+      )}
+    </Pressable>
+  );
+}
+
+function NavCta({ label, onPress }: { label: string; onPress: () => void }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable testID="nav-waitlist-button" onPress={onPress} accessibilityRole="button" hitSlop={6}
+      style={({ pressed, hovered }: any) => ({ height: 34, paddingHorizontal: 14, borderWidth: 1, borderColor: colors.brandSecondary, borderRadius: 999,
+        backgroundColor: hovered || pressed ? colors.brandSecondary : "transparent", alignItems: "center", justifyContent: "center" })}>
+      {({ pressed, hovered }: any) => (
+        <Text style={{ fontFamily: F.sansMed, fontSize: 12, letterSpacing: 0.6, color: hovered || pressed ? colors.onBrandSecondary : colors.onSurface }}>{label}</Text>
+      )}
     </Pressable>
   );
 }
@@ -51,11 +67,11 @@ export default function Nav({ onNav }: { onNav: (k: Anchor) => void }) {
                 )}
               </Pressable>
             ))}
-            <Btn small label="Join the Waitlist" testID="nav-waitlist-button" onPress={() => go("waitlist")} />
+            <NavCta label="Join the Waitlist" onPress={() => go("waitlist")} />
           </View>
         ) : (
           <View style={{ flexDirection: "row", alignItems: "center", gap: S.sm }}>
-            <Btn small label="Waitlist" testID="nav-waitlist-button" onPress={() => go("waitlist")} />
+            <NavCta label="Waitlist" onPress={() => go("waitlist")} />
             <Pressable testID="nav-menu-button" onPress={() => setOpen(true)} accessibilityLabel="Open menu" style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}>
               <Feather name="menu" size={22} color={colors.onSurface} />
             </Pressable>

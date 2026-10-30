@@ -56,7 +56,7 @@ export default function Leads({ notify }: { notify: (m: string, e?: boolean) => 
       </View>
       <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceTertiary, height: 48, paddingHorizontal: 12, gap: 8 }}>
         <Feather name="search" size={16} color={colors.muted} />
-        <TextInput testID="leads-search-input" value={q} onChangeText={setQ} placeholder="Search name, email or phone" placeholderTextColor={colors.muted} autoCapitalize="none" style={{ flex: 1, fontFamily: F.sans, fontSize: 15, color: colors.onSurface, height: 46 }} />
+        <TextInput testID="leads-search-input" value={q} onChangeText={setQ} placeholder="Search name, email, phone or referrer" placeholderTextColor={colors.muted} autoCapitalize="none" style={{ flex: 1, fontFamily: F.sans, fontSize: 15, color: colors.onSurface, height: 46 }} />
       </View>
       <View style={{ height: 56 }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, alignItems: "center" }}>
@@ -83,6 +83,7 @@ export default function Leads({ notify }: { notify: (m: string, e?: boolean) => 
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text style={{ fontFamily: F.sansSemi, fontSize: 15, color: colors.onSurface }}>{l.first_name} {l.last_name}</Text>
                   <Text style={{ fontFamily: F.sans, fontSize: 13, color: colors.muted }}>{l.email}{l.phone ? ` · ${l.phone}` : ""}</Text>
+                  {l.referred_by ? <Text testID={`lead-referred-${l.id}`} style={{ fontFamily: F.sansMed, fontSize: 12, color: colors.goldDeep }}>Referred by {l.referred_by}</Text> : null}
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 6 }}>
                     <Badge label={l.experience} />
                     <Badge label={`Email: ${l.email_status}`} tone={l.email_status === "subscribed" ? "ok" : "off"} />

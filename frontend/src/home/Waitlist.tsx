@@ -21,7 +21,7 @@ export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?:
   const { colors } = useTheme();
   const { wide } = useLayout();
   const router = useRouter();
-  const [f, setF] = useState({ first: "", last: "", email: "", phone: "", exp: "", emailOk: false, sms: false, website: "" });
+  const [f, setF] = useState({ first: "", last: "", email: "", phone: "", exp: "", ref: "", emailOk: false, sms: false, website: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [expOpen, setExpOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -45,7 +45,7 @@ export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?:
       await api("/waitlist", {
         method: "POST",
         body: { first_name: f.first.trim(), last_name: f.last.trim(), email: f.email.trim(), phone: f.phone.trim(), experience: f.exp,
-          email_consent: f.emailOk, sms_consent: f.sms, source_page: "/#waitlist", website: f.website },
+          email_consent: f.emailOk, sms_consent: f.sms, source_page: "/#waitlist", referred_by: f.ref.trim(), website: f.website },
       });
       setDone({ sms: f.sms });
       setTimeout(() => onSuccess?.(), 50);
@@ -56,7 +56,7 @@ export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?:
     }
   };
 
-  const input = (k: "first" | "last" | "email" | "phone", label: string, opts: any = {}) => (
+  const input = (k: "first" | "last" | "email" | "phone" | "ref", label: string, opts: any = {}) => (
     <View style={{ flex: 1, minWidth: wide ? 220 : undefined }}>
       <Text style={styles(colors).label}>{label}</Text>
       <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: colors.surfaceTertiary, borderWidth: 1, borderColor: errors[k] ? colors.error : colors.border, height: 52 }}>
@@ -137,6 +137,7 @@ export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?:
                   ) : null}
                   {errors.exp ? <Text testID="waitlist-exp-error" style={styles(colors).err}>{errors.exp}</Text> : null}
                 </View>
+                {input("ref", "Who referred you? (optional)", { autoCapitalize: "words", placeholder: "Their name" })}
                 {/* honeypot field for bots — hidden from people */}
                 <TextInput value={f.website} onChangeText={(v) => set("website", v)} style={{ height: 0, width: 0, opacity: 0, position: "absolute" }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" tabIndex={-1 as any} />
 

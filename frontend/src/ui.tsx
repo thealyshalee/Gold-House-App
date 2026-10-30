@@ -44,7 +44,7 @@ export function Display({ children, size, color, center, style, testID }: { chil
   const { wide } = useLayout();
   const fs = size ?? (wide ? 56 : 38);
   return (
-    <Text testID={testID} accessibilityRole="header" style={[{ fontFamily: F.serif, fontSize: fs, lineHeight: fs * 1.06, color: color ?? colors.onSurface, letterSpacing: 0.3, textAlign: center ? "center" : "left" }, style]}>
+    <Text testID={testID} accessibilityRole="header" style={[{ fontFamily: F.serif, fontSize: fs, lineHeight: Math.round(fs * 1.14), color: color ?? colors.onSurface, letterSpacing: 0.3, textAlign: center ? "center" : "left" }, style]}>
       {children}
     </Text>
   );

@@ -284,6 +284,9 @@ async def public_site():
     out = {k: v for k, v in s.items() if k not in PRIVATE_SETTINGS and k != "key"}
     if not s.get("show_price"):
         out["price"] = ""
+        out["price_note"] = ""
+    if not s.get("show_price") or not s.get("show_payment_plan"):
+        out["payment_plan"] = ""
     if not s.get("show_cohort_dates"):
         out["cohort_dates"] = ""
     if not s.get("show_announcement"):
@@ -306,6 +309,9 @@ async def admin_settings(admin: str = Depends(current_admin)):
 async def update_settings(body: dict, admin: str = Depends(current_admin)):
     allowed = set(DEFAULT_SETTINGS.keys())
     upd = {k: v for k, v in body.items() if k in allowed}
+    for k, v in list(upd.items()):
+        if isinstance(DEFAULT_SETTINGS[k], bool):
+            upd[k] = v is True
     upd["updated_at"] = now_iso()
     await db.settings.update_one({"key": "site"}, {"$set": upd}, upsert=True)
     return await admin_settings(admin)
@@ -417,6 +423,7 @@ class WaitlistIn(BaseModel):
     email_consent: bool
     sms_consent: bool = False
     source_page: str = Field(default="/", max_length=200)
+    referred_by: str = Field(default="", max_length=120)
     website: str = ""  # honeypot – must stay empty
 
 
@@ -463,6 +470,8 @@ async def join_waitlist(body: WaitlistIn, request: Request):
         upd["last_name"] = body.last_name.strip()
     if phone:
         upd["phone"] = phone
+    if body.referred_by.strip():
+        upd["referred_by"] = body.referred_by.strip()
     if body.sms_consent and phone:
         upd.update({"sms_status": "opted_in", "sms_consent_at": ts, "sms_phone": phone})
 
@@ -497,7 +506,7 @@ def lead_query(q, experience, email_status, sms_status):
     if q.strip():
         rx = {"$regex": re.escape(q.strip()), "$options": "i"}
         digits = re.sub(r"\D", "", q)
-        ors = [{"first_name": rx}, {"last_name": rx}, {"email": rx}, {"phone": rx}]
+        ors = [{"first_name": rx}, {"last_name": rx}, {"email": rx}, {"phone": rx}, {"referred_by": rx}]
         if len(digits) >= 3:
             ors.append({"phone": {"$regex": digits}})
         query["$or"] = ors
@@ -566,13 +575,13 @@ async def export_leads(type: str = "all", token: str = Query(""), bearer: Option
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["first_name", "last_name", "email", "phone_e164", "experience", "email_status", "email_consent_at",
-                "sms_status", "sms_consent_at", "consent_version", "source_page", "created_at", "updated_at"])
+                "sms_status", "sms_consent_at", "consent_version", "referred_by", "source_page", "created_at", "updated_at"])
     for l in leads:
         version = next((c.get("version") for c in reversed(l.get("consent_log", [])) if c.get("version")), "")
         w.writerow([l.get("first_name", ""), l.get("last_name", ""), l.get("email", ""),
                     (l.get("sms_phone") or l.get("phone", "")) if type == "sms" else l.get("phone", ""),
                     l.get("experience", ""), l.get("email_status", ""), l.get("email_consent_at", ""),
-                    l.get("sms_status", ""), l.get("sms_consent_at") or "", version, l.get("source_page", ""),
+                    l.get("sms_status", ""), l.get("sms_consent_at") or "", version, l.get("referred_by", ""), l.get("source_page", ""),
                     l.get("created_at", ""), l.get("updated_at", "")])
     name = "goldhouse-sms-opted-in.csv" if type == "sms" else "goldhouse-waitlist.csv"
     return Response(content=buf.getvalue(), media_type="text/csv", headers={"Content-Disposition": f'attachment; filename="{name}"'})
