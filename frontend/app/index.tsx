@@ -14,6 +14,7 @@ import Values from "@/src/home/Values";
 import { Different, SmallCohort, Intensive, ContinuedEducation, Referral, Commitment, WhoFor, Vision } from "@/src/home/Program";
 import Waitlist from "@/src/home/Waitlist";
 import { FaqSection, FinalCta, Footer } from "@/src/home/Closing";
+import { ReadySection } from "@/src/home/Ready";
 import { WhatIsTrading, SuccessPath } from "@/src/home/Learn";
 
 export type Anchor = "home" | "results" | "founder" | "intensive" | "waitlist";
@@ -77,7 +78,8 @@ export default function Home() {
         <View onLayout={mark("commitment")}><Commitment /></View>
         <View onLayout={mark("whofor")}><WhoFor /></View>
         <View onLayout={mark("vision")}><Vision site={site} onNav={go} /></View>
-        <View onLayout={mark("waitlist")}><Waitlist site={site} onSuccess={() => go("waitlist")} /></View>
+        <View onLayout={mark("waitlist")}><Waitlist site={site} onSuccess={(off) => scrollRef.current?.scrollTo({ y: yOf("waitlist") + off, animated: true })} /></View>
+        <ReadySection site={site} />
         <FaqSection site={site} />
         <FinalCta onNav={go} />
         <Footer site={site} onNav={go} bottomInset={insets.bottom} />

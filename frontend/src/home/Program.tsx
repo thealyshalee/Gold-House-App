@@ -6,6 +6,7 @@ import { useTheme } from "@/src/theme";
 import { F, S, Container, Section, Eyebrow, Display, Lede, Body, GoldRule, Btn, Reveal, Accordion, useLayout } from "@/src/ui";
 import { Site, resolveUrl } from "@/src/api";
 import type { Anchor } from "@/app/index";
+import { openReadyText } from "@/src/home/Ready";
 
 const TYPICAL = ["Overwhelming amounts of information.", "Too many strategies and indicators.", "Little personalized accountability.", "Learning without a clear structure.", "Confusing explanations for beginners.", "Students left to figure everything out alone."];
 const GH = ["One clearly defined core strategy.", "Simple lessons, step by step.", "You learn directly from me — no assistants, no anonymous team.", "Live classes with me every week.", "Daily chart analysis and journaling.", "Homework and real accountability.", "A community of students who genuinely support each other.", "Risk management first, and learning to make your own decisions."];
@@ -226,6 +227,9 @@ function Pricing({ site }: { site: Site }) {
             <Text style={{ fontFamily: F.serifItal, fontSize: 19, lineHeight: 26, color: colors.onSurfaceInverse }}>{site.price_note}</Text>
           </View>
         ) : null}
+        <View style={{ marginTop: S.xl }}>
+          <Btn variant="gold" label="Secure my spot" icon="message-circle" testID="pricing-ready-button" onPress={() => openReadyText(site.support_phone)} full={!wide} />
+        </View>
       </View>
       {plan.length ? (
         <View testID="payment-plan" style={{ flex: wide ? 1 : undefined, backgroundColor: colors.surfaceTertiary, borderWidth: 1, borderColor: colors.border, padding: wide ? 48 : 28 }}>

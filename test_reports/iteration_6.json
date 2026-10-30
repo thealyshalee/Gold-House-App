@@ -1,0 +1,30 @@
+{
+  "summary": "Frontend-only test of the waitlist benefits copy, the new Ready section and the SMS CTAs. Ran Playwright at 390px and 1366px. waitlist-benefits shows the 4 required items, and waitlist-success mentions cohort availability, trading tips, pop-up events/webinars and student shout-outs. ready-section comes right after waitlist-section (waitlist bottom == ready top) with the headline 'I'M READY TO SECURE MY SPOT TODAY.'. ready-phone shows (602) 804-8859, and ready-instructions lists full name, Instagram handle, READY, PAY UPFRONT or PAYMENT PLAN and the 24–48 hours note. ready-text-button and pricing-ready-button (inside pricing-block) both call window.open with sms:+16028048859?body=READY%0AFull%20name%3A%20%0AInstagram%3A%20%40%0APAY%20UPFRONT%20or%20PAYMENT%20PLAN%3A%20. No page errors, and the page URL did not change. Layout: stacked on mobile (no horizontal overflow, scrollWidth 390); two columns on desktop (button column x=103, instructions card x=682). Regression: the 390px waitlist submit succeeded, and the test lead was soft-deleted through the admin API (200; search now returns []).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home / pricing-block (390px)", "issues": ["The 'I'M READY TO SECURE MY SPOT' label on pricing-ready-button wraps to two lines with letter-spacing ('SPOT' ends up on line 2), which looks cramped. Shorten the label or reduce the letter-spacing on narrow widths."]},
+      {"screen": "Home / waitlist success (390px)", "issues": ["After submit, onSuccess scrolls to the top of waitlist-section. On mobile the heading and the 4 benefits fill the viewport, so the waitlist-success card is below the fold. Consider scrolling to the success card itself."]},
+      {"screen": "Home / ready-section", "issues": ["ready-phone is plain text and does nothing when tapped. Optionally make it tappable to open the same sms/tel link."]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [".screenshots/ready_390.png", ".screenshots/ready_1366.png", ".screenshots/pricing_ready_390.png", ".screenshots/pricing_ready_1366.png", ".screenshots/wl_success.png"],
+  "action_items": [
+    "(Minor) Stop the pricing-ready-button label from wrapping at 390px.",
+    "(Minor) After a successful waitlist submit on mobile, scroll to the waitlist-success card.",
+    "(Optional) pricing-ready-button only renders when the payment plan is shown (plan.length). If the admin hides the payment plan, the pricing CTA disappears. Confirm this is intended."
+  ],
+  "critical_code_review_comments": [
+    "Ready.tsx: openReadyText uses '&body=' on iOS and '?body=' elsewhere. That works, but recent iOS versions also accept '?body='. OK as is.",
+    "Ready.tsx: the Linking.openURL catch silently swallows the error. On desktop browsers with no SMS handler, nothing visible happens. The phone number is shown nearby, so this is acceptable."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100%"},
+  "seed_data_creation": "Created one lead (test_ready_*@example.com) and soft-deleted it afterwards.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "To verify the SMS CTAs on web, stub window.open via add_init_script; RN-web Linking.openURL calls window.open. ready-section comes after waitlist-section and is not in the index.tsx ORDER anchors. pricing-ready-button is inside the payment-plan card within pricing-block. Admin cleanup: POST localhost:8001/api/auth/login, then GET /api/admin/leads?search=..., then DELETE /api/admin/leads/{id}."
+}

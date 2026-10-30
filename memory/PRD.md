@@ -40,3 +40,4 @@ Premium, mobile-first official website for Gold House Trading (Esothrive LLC DBA
 - Oct 30 2026: Fixed founder/story section overlap on mobile; swim fact updated (Bob Bowman & Michael Phelps).
 - Oct 30 2026: Pricing block ($1,699, $2,000 increase note, payment plan, admin-editable); Referral program section ($100) + "Who referred you?" waitlist field (stored, searchable, CSV); removed mobile sticky CTA (covered text); 320px nav fix; headline line-height increased.
 - Oct 30 2026: Added 'What is trading' (beginner explainer) and 'Success Path' (10x graduate account) sections; income figures intentionally omitted for compliance.
+- Oct 30 2026: Waitlist benefits list; 'I'm ready to secure my spot today' section + pricing button (prefilled text to (602) 804-8859, reply in 24–48h).

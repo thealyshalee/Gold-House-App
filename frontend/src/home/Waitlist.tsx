@@ -17,7 +17,8 @@ function phoneOk(p: string) {
   return d.length === 10 || (d.length === 11 && d.startsWith("1"));
 }
 
-export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?: () => void }) {
+export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?: (offset: number) => void }) {
+  const cardY = React.useRef(0);
   const { colors } = useTheme();
   const { wide } = useLayout();
   const router = useRouter();
@@ -48,7 +49,7 @@ export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?:
           email_consent: f.emailOk, sms_consent: f.sms, source_page: "/#waitlist", referred_by: f.ref.trim(), website: f.website },
       });
       setDone({ sms: f.sms });
-      setTimeout(() => onSuccess?.(), 50);
+      setTimeout(() => onSuccess?.(wide ? 0 : cardY.current + 60), 50);
     } catch (err: any) {
       setServerErr(err.message);
     } finally {
@@ -97,9 +98,18 @@ export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?:
             <Display>YOUR SEAT AT THE TABLE STARTS HERE.</Display>
             <Lede style={{ marginTop: S.lg }}>Be the first to know when the next Gold House Trading Intensive opens.</Lede>
             <GoldRule style={{ marginVertical: S.xl }} />
-            <Body color={colors.muted}>Add your name to my waitlist and you&apos;ll be the first to hear about the next cohort — dates, enrollment details, and the occasional Gold House update. Spots are limited because I only take 6–12 hand-picked students each month, so the waitlist always hears first.</Body>
+            <Body color={colors.muted}>Add your name to my waitlist and you&apos;ll be the first to hear about the next cohort. Spots are limited because I only take 6–12 hand-picked students each month, so the waitlist always hears first.</Body>
+            <Text style={{ fontFamily: F.sansSemi, fontSize: 11, letterSpacing: 3, color: colors.goldDeep, marginTop: S.xl, marginBottom: S.md }}>WHAT YOU&apos;LL GET FROM ME</Text>
+            <View style={{ gap: 10 }} testID="waitlist-benefits">
+              {["Updates on upcoming availability for the next cohorts", "Occasional trading tips", "Pop-up events and webinar updates", "Occasional student success shout-outs"].map((b) => (
+                <View key={b} style={{ flexDirection: "row", gap: 12 }}>
+                  <Feather name="check" size={15} color={colors.brand} style={{ marginTop: 4 }} />
+                  <Body size={15} style={{ flex: 1 }}>{b}</Body>
+                </View>
+              ))}
+            </View>
           </View>
-          <View style={{ flex: wide ? 1 : undefined, backgroundColor: colors.surfaceTertiary, borderWidth: 1, borderColor: colors.border, padding: wide ? 48 : 24 }}>
+          <View onLayout={(e) => { cardY.current = e.nativeEvent.layout.y; }} style={{ flex: wide ? 1 : undefined, backgroundColor: colors.surfaceTertiary, borderWidth: 1, borderColor: colors.border, padding: wide ? 48 : 24 }}>
             {done ? (
               <Animated.View entering={FadeIn.duration(600)} testID="waitlist-success" style={{ alignItems: "center", paddingVertical: 32 }}>
                 <View style={{ width: 64, height: 64, borderRadius: 32, borderWidth: 1, borderColor: colors.brand, alignItems: "center", justifyContent: "center" }}>
@@ -107,7 +117,7 @@ export default function Waitlist({ site, onSuccess }: { site?: Site; onSuccess?:
                 </View>
                 <Display size={wide ? 44 : 34} center style={{ marginTop: S.xl }}>WELCOME TO THE HOUSE. 🏠💛</Display>
                 <GoldRule center style={{ marginVertical: S.xl }} />
-                <Body center>You&apos;re officially on the Gold House waitlist! Keep an eye on your inbox for upcoming cohort announcements. If you opted into text updates, you&apos;ll hear from us there too.</Body>
+                <Body center>You&apos;re officially on the Gold House waitlist! Keep an eye on your inbox for updates on upcoming cohort availability, occasional trading tips, pop-up events and webinars, and student success shout-outs. If you opted into text updates, you&apos;ll hear from us there too.</Body>
               </Animated.View>
             ) : (
               <View style={{ gap: S.xl }} testID="waitlist-form">
